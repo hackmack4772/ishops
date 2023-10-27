@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\admin\AdminHomeController;
 use App\Http\Controllers\admin\AdminLoginController;
+use App\Http\Controllers\admin\CategoryController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -32,5 +33,6 @@ Route::group(["middleware"=>"admin.guest"],function(){
 Route::group(["middleware"=>"admin.auth"],function(){
     Route::get("dashboard",[AdminHomeController::class,"index"])->name("admin.dashboard");
     Route::get("logout",[AdminLoginController::class,"logout"])->name("admin.logout");
+    Route::resource("category", CategoryController::class);
 });
 });
