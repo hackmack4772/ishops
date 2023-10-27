@@ -2,6 +2,8 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Laravel Shop :: Administrative Panel</title>
 		<!-- Google Font: Source Sans Pro -->
@@ -36,7 +38,13 @@
 		<script src="{{ asset('admin_assets/js/adminlte.min.js')}}"></script>
 		<!-- AdminLTE for demo purposes -->
 		<script src="{{ asset('admin_assets/js/demo.js')}}"></script>
-
+        <script>
+        $.ajaxSetup({
+            headers: {
+               'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+         });
+         </script>
         @yield("script")
 	</body>
 </html>

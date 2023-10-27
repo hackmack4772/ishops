@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -29,7 +30,14 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // $request->validate();
+        $validate = \Validator::make($request->all(), ["name" => "required", "slug" => "required|unique:categories"]);
+        if ($validate->fails()) {
+            return response()->json(["status" => false, "errors" => $validate->errors()]);
+        }
+
+        $category = Category::create($request->only(["name", "slug", "status"]));
+        return response()->json(["status" => true, "message" => "Inserted Successfully"]);
     }
 
     /**
@@ -62,5 +70,16 @@ class CategoryController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+   public function getSlug(Request $request){
+        $slug="";
+
+        if(isset($request->name)){
+            $slug=\Str::slug($request->name);
+        }
+        return response()->json([
+            "status"=>true,
+            "slug"=>$slug
+        ]);
     }
 }
