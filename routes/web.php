@@ -32,6 +32,5 @@ Route::group(["middleware"=>"admin.guest"],function(){
 Route::group(["middleware"=>"admin.auth"],function(){
     Route::get("dashboard",[AdminHomeController::class,"index"])->name("admin.dashboard");
     Route::get("logout",[AdminLoginController::class,"logout"])->name("admin.logout");
-
 });
 });
