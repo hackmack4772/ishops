@@ -4,7 +4,10 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\TempImage;
+use File;
 use Illuminate\Http\Request;
+use Image;
 
 class CategoryController extends Controller
 {
@@ -14,13 +17,13 @@ class CategoryController extends Controller
     public function index(Request $request)
     {
         // dd();
-$categories=Category::latest();
-if($request->keyword){
-   $categories=Category::where("name","like","%".$request->keyword."%");
-}
-$categories=$categories->paginate(10);
-// dd($categories);
-        return view("admin.categories",compact("categories"));
+        $categories = Category::latest();
+        if ($request->keyword) {
+            $categories = Category::where("name", "like", "%" . $request->keyword . "%");
+        }
+        $categories = $categories->paginate(10);
+        // dd($categories);
+        return view("admin.categories", compact("categories"));
 
     }
 
@@ -44,8 +47,36 @@ $categories=$categories->paginate(10);
             return response()->json(["status" => false, "errors" => $validate->errors()]);
         }
 
-        $category = Category::create($request->only(["name", "slug", "status"]));
-        $request->session()->flash("success","Category Created Successfully");
+        // $category = Category::create($request->only(["name", "slug", "status"]));
+        $category = new Category();
+        $category->name = $request->name;
+        $category->slug = $request->slug;
+        $category->status = $request->status;
+        $category->save();
+
+        if (isset($request->image_id)) {
+            $tempImage = TempImage::find($request->image_id);
+            if ($tempImage) {
+                $imageExt = explode(".", $tempImage->image);
+                $ext = last($imageExt);
+                $newImageName = $category->id . "." . $ext;
+                $sPath = public_path('temp') . '/' . $tempImage->image;
+                $dPath = public_path('uploads/categories/') . '/' . $newImageName;
+                // dd($dPath);
+                File::copy($sPath, $dPath);
+                $img=Image::make($sPath);
+                $dPath = public_path('uploads/categories/thumbs') . '/' . $newImageName;
+
+                $img->resize(450,600);
+                $img->save($dPath);
+                $category->image = $newImageName;
+                $category->save();
+
+
+            }
+        }
+
+        $request->session()->flash("success", "Category Created Successfully");
         return response()->json(["status" => true, "message" => "Inserted Successfully"]);
     }
 
@@ -80,15 +111,16 @@ $categories=$categories->paginate(10);
     {
         //
     }
-   public function getSlug(Request $request){
-        $slug="";
+    public function getSlug(Request $request)
+    {
+        $slug = "";
 
-        if(isset($request->name)){
-            $slug=\Str::slug($request->name);
+        if (isset($request->name)) {
+            $slug = \Str::slug($request->name);
         }
         return response()->json([
-            "status"=>true,
-            "slug"=>$slug
+            "status" => true,
+            "slug" => $slug
         ]);
     }
 }
