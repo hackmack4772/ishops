@@ -9,7 +9,7 @@
                         <h1>Create Category</h1>
                     </div>
                     <div class="col-sm-6 text-right">
-                        <a href="categories.html" class="btn btn-primary">Back</a>
+                        <a href="{{route("category.index")}}" class="btn btn-primary">Back</a>
                     </div>
                 </div>
             </div>
@@ -53,7 +53,7 @@
                         </div>
                         <div class="pb-5 pt-3">
                             <button class="btn btn-primary">Create</button>
-                            <a href="brands.html" class="btn btn-outline-dark ml-3">Cancel</a>
+                            <a href="{{route("category.index")}}" class="btn btn-outline-dark ml-3">Cancel</a>
                         </div>
                     </form>
                 </div>
@@ -61,6 +61,7 @@
             </div>
         </section>
     </div>
+    @endsection
 
 @section('script')
     <script>
@@ -78,6 +79,7 @@
                 dataType: "json",
                 success: function(data) {
                     if (data?.status) {
+                       window.location.href= "{{route('category.index')}}"
                         $("#slug").removeClass("is-invalid").siblings("p").removeClass(
                             "invalid-feedback").html('')
                         $("#name").removeClass("is-invalid").siblings("p").removeClass(
@@ -122,5 +124,4 @@ $.ajax({
 });
         })
     </script>
-@endsection
 @endsection
