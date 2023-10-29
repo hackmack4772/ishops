@@ -16,11 +16,11 @@ class SubCategoryController extends Controller
     {
         //
         $subcategories = SubCategory::select('sub_categories.*', 'categories.name as categoryName')
-        ->leftJoin('categories', 'categories.id', '=', 'sub_categories.category_id');
+            ->leftJoin('categories', 'categories.id', '=', 'sub_categories.category_id');
         if ($request->keyword) {
 
-            $subcategories =  $subcategories->where("sub_categories.name", "like", "%" . $request->keyword . "%");
-            $subcategories =  $subcategories->orWhere("categories.name", "like", "%" . $request->keyword . "%");
+            $subcategories = $subcategories->where("sub_categories.name", "like", "%" . $request->keyword . "%");
+            $subcategories = $subcategories->orWhere("categories.name", "like", "%" . $request->keyword . "%");
         }
         $subcategories = $subcategories->paginate(10);
         // dd($categories);
@@ -33,9 +33,9 @@ class SubCategoryController extends Controller
     public function create()
     {
         //
-        $categories=Category::all();
+        $categories = Category::all();
 
-        return view("admin.subcategories.create_subcategory",compact("categories"));
+        return view("admin.subcategories.create_subcategory", compact("categories"));
 
     }
 
@@ -45,19 +45,19 @@ class SubCategoryController extends Controller
     public function store(Request $request)
     {
 
-            // $request->validate();
-            $validate = \Validator::make($request->all(), ["name" => "required", "slug" => "required|unique:categories","category"=>"required","status"=>"required"]);
-            if ($validate->fails()) {
-                return response()->json(["status" => false, "errors" => $validate->errors()]);
-            }
-            $category = new SubCategory();
-            $category->name = $request->name;
-            $category->slug = $request->slug;
-            $category->category_id = $request->category;
-            $category->status = $request->status;
-            $category->save();
-            $request->session()->flash("success", "Sub Category Created Successfully");
-            return response()->json(["status" => true, "message" => "Inserted Successfully"]);
+        // $request->validate();
+        $validate = \Validator::make($request->all(), ["name" => "required", "slug" => "required|unique:categories", "category" => "required", "status" => "required"]);
+        if ($validate->fails()) {
+            return response()->json(["status" => false, "errors" => $validate->errors()]);
+        }
+        $category = new SubCategory();
+        $category->name = $request->name;
+        $category->slug = $request->slug;
+        $category->category_id = $request->category;
+        $category->status = $request->status;
+        $category->save();
+        $request->session()->flash("success", "Sub Category Created Successfully");
+        return response()->json(["status" => true, "message" => "Inserted Successfully"]);
     }
 
     /**
@@ -76,10 +76,10 @@ class SubCategoryController extends Controller
         //
         $subcategory = SubCategory::find($id);
         if (!$subcategory) {
-            return to_route("category.index")->with("error","Sub Category Not Found");
+            return to_route("category.index")->with("error", "Sub Category Not Found");
         }
-$categories=Category::all();
-        return view("admin.subcategories.update_subcategory",compact("categories","subcategory"));
+        $categories = Category::all();
+        return view("admin.subcategories.update_subcategory", compact("categories", "subcategory"));
 
     }
 
@@ -90,24 +90,18 @@ $categories=Category::all();
     {
         $subcategory = SubCategory::find($id);
         if (!$subcategory) {
-            return response()->json(["status"=> false,"isNotFound"=>true,"message"=> "Category Not Found"]);
+            return response()->json(["status" => false, "isNotFound" => true, "message" => "Category Not Found"]);
         }
-        $validate = \Validator::make($request->all(), ["name" => "required", "slug" => "required|unique:categories,slug,".$id.',id' ,"category"=>"required","status"=>"required"]);
+        $validate = \Validator::make($request->all(), ["name" => "required", "slug" => "required|unique:categories,slug," . $id . ',id', "category" => "required", "status" => "required"]);
         if ($validate->fails()) {
             return response()->json(["status" => false, "errors" => $validate->errors()]);
         }
-
-
         // $old_image= $request->file("image");
         $subcategory->name = $request->name;
         $subcategory->slug = $request->slug;
         $subcategory->category_id = $request->category;
-
         $subcategory->status = $request->status;
         $subcategory->save();
-
-
-
         $request->session()->flash("success", "Sub Category Updated Successfully");
         return response()->json(["status" => true, "message" => "Updated Successfully"]);
 
@@ -116,7 +110,7 @@ $categories=Category::all();
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id,Request $request)
+    public function destroy(string $id, Request $request)
     {
         $category = Category::find($id);
         if (!$category) {
@@ -125,7 +119,7 @@ $categories=Category::all();
             return response()->json(["status" => true, "message" => "SubCategory not  found"]);
         }
         $category->delete();
-    $request->session()->flash("success", "Sub Category Deleted Successfully");
+        $request->session()->flash("success", "Sub Category Deleted Successfully");
         return response()->json(["status" => true, "message" => "Deleted Successfully"]);
     }
 }

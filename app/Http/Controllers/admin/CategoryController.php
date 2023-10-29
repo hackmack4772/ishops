@@ -64,7 +64,7 @@ class CategoryController extends Controller
                 $dPath = public_path('uploads/categories/') . '/' . $newImageName;
                 // dd($dPath);
                 File::copy($sPath, $dPath);
-                $img=Image::make($sPath);
+                $img = Image::make($sPath);
                 $dPath = public_path('uploads/categories/thumbs') . '/' . $newImageName;
 
                 $img->fit(450, 600, function ($constraint) {
@@ -94,11 +94,11 @@ class CategoryController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id,Request $request)
+    public function edit(string $id, Request $request)
     {
         $category = Category::find($id);
         if (!$category) {
-            return to_route("category.index")->with("error","Category Not Found");
+            return to_route("category.index")->with("error", "Category Not Found");
         }
 
 
@@ -113,15 +113,15 @@ class CategoryController extends Controller
     {
         $category = Category::find($id);
         if (!$category) {
-            return response()->json(["status"=> false,"isNotFound"=>true,"message"=> "Category Not Found"]);
+            return response()->json(["status" => false, "isNotFound" => true, "message" => "Category Not Found"]);
         }
-        $validate = \Validator::make($request->all(), ["name" => "required", "slug" => "required|unique:categories,slug,".$id.',id']);
+        $validate = \Validator::make($request->all(), ["name" => "required", "slug" => "required|unique:categories,slug," . $id . ',id']);
         if ($validate->fails()) {
             return response()->json(["status" => false, "errors" => $validate->errors()]);
         }
 
         // $category = new Category();
-        $old_image= $request->file("image");
+        $old_image = $request->file("image");
         $category->name = $request->name;
         $category->slug = $request->slug;
         $category->status = $request->status;
@@ -137,7 +137,7 @@ class CategoryController extends Controller
                 $dPath = public_path('uploads/categories/') . '/' . $newImageName;
                 // dd($dPath);
                 File::copy($sPath, $dPath);
-                $img=Image::make($sPath);
+                $img = Image::make($sPath);
                 $dPath = public_path('uploads/categories/thumbs') . '/' . $newImageName;
 
                 $img->fit(450, 600, function ($constraint) {
@@ -161,7 +161,7 @@ class CategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id,Request $request)
+    public function destroy(string $id, Request $request)
     {
         $category = Category::find($id);
         if (!$category) {
@@ -172,8 +172,8 @@ class CategoryController extends Controller
         File::delete(public_path('uploads/categories/thumbs') . '/' . $category->image);
         File::delete(public_path('uploads/categories/thumbs') . '/' . $category->image);
 
-    $category->delete();
-    $request->session()->flash("success", "Category Deleted Successfully");
+        $category->delete();
+        $request->session()->flash("success", "Category Deleted Successfully");
         return response()->json(["status" => true, "message" => "Deleted Successfully"]);
     }
     public function getSlug(Request $request)
