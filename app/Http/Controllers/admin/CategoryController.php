@@ -165,7 +165,9 @@ class CategoryController extends Controller
     {
         $category = Category::find($id);
         if (!$category) {
-            return to_route("category.index")->with("error","Category Not Found");
+            $request->session()->flash("success", "Category Not found");
+
+            return response()->json(["status" => true, "message" => "Category not  found"]);
         }
         File::delete(public_path('uploads/categories/thumbs') . '/' . $category->image);
         File::delete(public_path('uploads/categories/thumbs') . '/' . $category->image);

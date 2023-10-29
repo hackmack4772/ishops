@@ -108,7 +108,7 @@
                         $("#name").removeClass("is-invalid").siblings("p").removeClass(
                             "invalid-feedback").html('')
                     } else {
-                        if(data?isNotFound){
+                        if(data?.isNotFound){
                             window.location.href = "{{ route('category.index') }}"
                         }
                         let errors = data.errors;
