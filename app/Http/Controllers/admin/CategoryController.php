@@ -23,7 +23,7 @@ class CategoryController extends Controller
         }
         $categories = $categories->paginate(10);
         // dd($categories);
-        return view("admin.categories", compact("categories"));
+        return view("admin.categories.categories", compact("categories"));
 
     }
 
@@ -33,7 +33,7 @@ class CategoryController extends Controller
     public function create()
     {
         //
-        return view("admin.create_category");
+        return view("admin.categories.create_category");
     }
 
     /**
@@ -67,7 +67,9 @@ class CategoryController extends Controller
                 $img=Image::make($sPath);
                 $dPath = public_path('uploads/categories/thumbs') . '/' . $newImageName;
 
-                $img->resize(450,600);
+                $img->fit(450, 600, function ($constraint) {
+                    $constraint->upsize();
+                });
                 $img->save($dPath);
                 $category->image = $newImageName;
                 $category->save();
@@ -86,14 +88,22 @@ class CategoryController extends Controller
     public function show(string $id)
     {
         //
+
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(string $id,Request $request)
     {
-        //
+        $category = Category::find($id);
+        if (!$category) {
+            return to_route("category.index")->with("error","Category Not Found");
+        }
+
+
+        return view("admin.categories.update_category", compact("category"));
+
     }
 
     /**
@@ -101,15 +111,68 @@ class CategoryController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $category = Category::find($id);
+        if (!$category) {
+            return response()->json(["status"=> false,"isNotFound"=>true,"message"=> "Category Not Found"]);
+        }
+        $validate = \Validator::make($request->all(), ["name" => "required", "slug" => "required|unique:categories,slug,".$id.',id']);
+        if ($validate->fails()) {
+            return response()->json(["status" => false, "errors" => $validate->errors()]);
+        }
+
+        // $category = new Category();
+        $old_image= $request->file("image");
+        $category->name = $request->name;
+        $category->slug = $request->slug;
+        $category->status = $request->status;
+        $category->save();
+
+        if (isset($request->image_id)) {
+            $tempImage = TempImage::find($request->image_id);
+            if ($tempImage) {
+                $imageExt = explode(".", $tempImage->image);
+                $ext = last($imageExt);
+                $newImageName = $category->id . "." . $ext;
+                $sPath = public_path('temp') . '/' . $tempImage->image;
+                $dPath = public_path('uploads/categories/') . '/' . $newImageName;
+                // dd($dPath);
+                File::copy($sPath, $dPath);
+                $img=Image::make($sPath);
+                $dPath = public_path('uploads/categories/thumbs') . '/' . $newImageName;
+
+                $img->fit(450, 600, function ($constraint) {
+                    $constraint->upsize();
+                });
+                $img->save($dPath);
+                $category->image = $newImageName;
+                $category->save();
+                File::delete(public_path('uploads/categories/thumbs') . '/' . $old_image);
+                File::delete(public_path('uploads/categories') . '/' . $old_image);
+
+
+            }
+        }
+
+        $request->session()->flash("success", "Category Updated Successfully");
+        return response()->json(["status" => true, "message" => "Updated Successfully"]);
+
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id,Request $request)
     {
-        //
+        $category = Category::find($id);
+        if (!$category) {
+            return to_route("category.index")->with("error","Category Not Found");
+        }
+        File::delete(public_path('uploads/categories/thumbs') . '/' . $category->image);
+        File::delete(public_path('uploads/categories/thumbs') . '/' . $category->image);
+
+    $category->delete();
+    $request->session()->flash("success", "Category Deleted Successfully");
+        return response()->json(["status" => true, "message" => "Deleted Successfully"]);
     }
     public function getSlug(Request $request)
     {
@@ -118,6 +181,7 @@ class CategoryController extends Controller
         if (isset($request->name)) {
             $slug = \Str::slug($request->name);
         }
+
         return response()->json([
             "status" => true,
             "slug" => $slug
