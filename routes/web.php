@@ -3,6 +3,7 @@
 use App\Http\Controllers\admin\AdminHomeController;
 use App\Http\Controllers\admin\AdminLoginController;
 use App\Http\Controllers\admin\CategoryController;
+use App\Http\Controllers\admin\SubCategoryController;
 use App\Http\Controllers\admin\TempImageController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,6 +36,7 @@ Route::group(["middleware"=>"admin.auth"],function(){
     Route::get("dashboard",[AdminHomeController::class,"index"])->name("admin.dashboard");
     Route::get("logout",[AdminLoginController::class,"logout"])->name("admin.logout");
     Route::resource("category", CategoryController::class);
+    Route::resource("subcategory", SubCategoryController::class);
     Route::post("category-slug",[CategoryController::class,"getSlug"])->name("admin.category-slug");
     Route::post("upload-temp-image",[TempImageController::class,"create"])->name("temp-images.create");
 });

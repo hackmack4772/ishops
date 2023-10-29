@@ -33,7 +33,7 @@
                                     <div class="mb-3">
                                         <label for="email">Slug</label>
                                         <input type="text" name="slug" id="slug" class="form-control"
-                                            placeholder="Slug" @readonly(true)  value="{{$category->name}}" >
+                                            placeholder="Slug" @readonly(true)  value="{{$category->slug}}" >
                                         <p></p>
 
                                     </div>
@@ -58,7 +58,7 @@
 
                                         <select name="status" id="status" class="form-control" placeholder="Status">
                                             <option  {{$category->status==1?"selected":""}} value="1">Active</option>
-                                            <option {{$category->status==0 ?"selected":""}} value="0">InActive</option>
+                                            <option {{$category->status==0 ?"selected":""}} value="0">Block</option>
                                         </select>
                                     </div>
 

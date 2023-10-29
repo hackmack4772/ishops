@@ -58,7 +58,7 @@
 
                                         <select name="status" id="status" class="form-control" placeholder="Status">
                                             <option value="1">Active</option>
-                                            <option value="0">InActive</option>
+                                            <option value="0">Block</option>
                                         </select>
                                     </div>
                                 </div>
